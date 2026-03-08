@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sports Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c26;
+    --border: #2a2a38;
+    --accent: #c8102e;
+    --accent2: #9e0a24;
+    --gold: #cfb87c;
+    --text: #f0f0f0;
+    --text2: #9090a8;
+    --green: #2ecc71;
+    --red: #e74c3c;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Source Sans 3', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #0a0a0f 0%, #1a0a10 50%, #0a0a0f 100%);
+    border-bottom: 2px solid var(--accent);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .header-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+
+  .header-title span {
+    color: var(--accent);
+  }
+
+  .controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  select {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px 14px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  select:focus, select:hover {
+    border-color: var(--accent);
+  }
+
+  .refresh-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .refresh-btn:hover { background: var(--accent2); }
+
+  /* Main layout */
+  .main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  @media (max-width: 768px) {
+    .main { grid-template-columns: 1fr; }
+  }
+
+  .full-width { grid-column: 1 / -1; }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .card-header {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .card-body { padding: 12px; }
+
+  /* Team Header */
+  .team-hero {
+    background: linear-gradient(135deg, #0a0a0f, #1a0a10);
+    border-bottom: 3px solid var(--accent);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .team-logo {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 12px rgba(200,16,46,0.4));
+  }
+
+  .team-info h1 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .team-info .record {
+    color: var(--text2);
+    font-size: 0.95rem;
+    margin-top: 4px;
+  }
+
+  .team-rank {
+    background: var(--accent);
+    color: white;
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  /* Live game */
+  .live-game {
+    background: linear-gradient(135deg, #0f1a0f, #0a0a0f);
+    border: 1px solid #2a3a2a;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 8px;
+  }
+
+  .live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--accent);
+    color: white;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    padding: 3px 10px;
+    border-radius: 3px;
+    margin-bottom: 12px;
+  }
+
+  .live-dot {
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+    animation: pulse 1s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .scoreboard {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .score-team {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+  }
+
+  .score-team img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+  }
+
+  .score-team .name {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  .score-team .rank-badge {
+    font-size: 0.7rem;
+    color: var(--gold);
+  }
+
+  .score-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .scores {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .score-num {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.8rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .score-sep {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.5rem;
+    color: var(--text2);
+  }
+
+  .game-status {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.8rem;
+    color: var(--green);
+    letter-spacing: 1px;
+    text-align: center;
+  }
+
+  /* Schedule list */
+  .game-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+    transition: background 0.15s;
+  }
+
+  .game-item:last-child { border-bottom: none; }
+  .game-item:hover { background: var(--surface2); }
+
+  .game-date {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.75rem;
+    color: var(--text2);
+    letter-spacing: 1px;
+    width: 80px;
+    flex-shrink: 0;
+    text-transform: uppercase;
+  }
+
+  .game-teams {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .game-matchup {
+    font-size: 0.9rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .game-venue {
+    font-size: 0.75rem;
+    color: var(--text2);
+    margin-top: 2px;
+  }
+
+  .game-result {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.85rem;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .win { color: var(--green); }
+  .loss { color: var(--red); }
+  .upcoming { color: var(--text2); }
+
+  .game-network {
+    font-size: 0.7rem;
+    color: var(--gold);
+    text-align: right;
+    margin-top: 2px;
+  }
+
+  /* Rankings table */
+  .rankings-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+
+  .rankings-table th {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .rankings-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #1a1a24;
+  }
+
+  .rankings-table tr:hover td { background: var(--surface2); }
+
+  .rank-num {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    color: var(--accent);
+    width: 36px;
+  }
+
+  .team-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .team-cell img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+  }
+
+  .highlight-row td {
+    background: rgba(200,16,46,0.08) !important;
+    border-left: 3px solid var(--accent);
+  }
+
+  /* Today's games */
+  .today-game {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    gap: 10px;
+  }
+
+  .today-game:last-child { border-bottom: none; }
+
+  .today-time {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.8rem;
+    color: var(--gold);
+    width: 60px;
+    flex-shrink: 0;
+  }
+
+  .today-matchup {
+    flex: 1;
+    font-size: 0.85rem;
+  }
+
+  .today-network {
+    font-size: 0.75rem;
+    color: var(--text2);
+    flex-shrink: 0;
+  }
+
+  /* Loading / error */
+  .loading {
+    text-align: center;
+    padding: 40px;
+    color: var(--text2);
+    font-family: 'Oswald', sans-serif;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+  }
+
+  .loading::after {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 32px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 12px auto 0;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error {
+    text-align: center;
+    padding: 24px;
+    color: var(--text2);
+    font-size: 0.85rem;
+  }
+
+  .no-games {
+    text-align: center;
+    padding: 24px;
+    color: var(--text2);
+    font-size: 0.85rem;
+    font-style: italic;
+  }
+
+  /* Last updated */
+  .last-updated {
+    text-align: right;
+    font-size: 0.7rem;
+    color: var(--text2);
+    padding: 8px 16px;
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-title">SPORTS <span>HQ</span></div>
+  <div class="controls">
+    <select id="sportSelect" onchange="changeSport()">
+      <option value="football/college-football|ALABAMA|NCAAF">🏈 Alabama Football</option>
+      <option value="basketball/mens-college-basketball|ALABAMA|NCAAMB">🏀 Alabama Basketball</option>
+      <option value="golf/pga|PGA|PGA">⛳ PGA Tour</option>
+      <option value="football/nfl|ATL|NFL">🏈 Atlanta Falcons</option>
+      <option value="baseball/mlb|ATL|MLB">⚾ Atlanta Braves</option>
+      <option value="tennis/atp|ATP|ATP">🎾 ATP Tennis</option>
+      <option value="tennis/wta|WTA|WTA">🎾 WTA Tennis</option>
+    </select>
+    <button class="refresh-btn" onclick="loadAll()">↻ REFRESH</button>
+  </div>
+</div>
+
+<div id="teamHero"></div>
+
+<div class="main">
+  <div class="card full-width" id="liveCard" style="display:none">
+    <div class="card-header">
+      <span class="card-title">🔴 LIVE NOW</span>
+    </div>
+    <div class="card-body" id="liveContent"></div>
+  </div>
+
+  <div class="card full-width">
+    <div class="card-header">
+      <span class="card-title">📅 TODAY'S GAMES</span>
+      <span id="todayLeagueLabel" style="font-size:0.75rem;color:var(--text2)"></span>
+    </div>
+    <div class="card-body" id="todayContent"><div class="loading">Loading</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">📋 SCHEDULE</span>
+    </div>
+    <div id="scheduleContent"><div class="loading">Loading</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">🏆 RANKINGS / STANDINGS</span>
+    </div>
+    <div id="rankingsContent"><div class="loading">Loading</div></div>
+  </div>
+</div>
+
+<div class="last-updated" id="lastUpdated"></div>
+
+<script>
+const SPORTS = {
+  "football/college-football|ALABAMA|NCAAF": {
+    sport: "football", league: "college-football", team: "ALABAMA",
+    rankLeague: "college-football", name: "Alabama Crimson Tide", rankType: "cfp"
+  },
+  "basketball/mens-college-basketball|ALABAMA|NCAAMB": {
+    sport: "basketball", league: "mens-college-basketball", team: "ALABAMA",
+    rankLeague: "mens-college-basketball", name: "Alabama Basketball", rankType: "ap"
+  },
+  "golf/pga|PGA|PGA": {
+    sport: "golf", league: "pga", team: null,
+    rankLeague: "pga", name: "PGA Tour", rankType: null, isGolf: true
+  },
+  "football/nfl|ATL|NFL": {
+    sport: "football", league: "nfl", team: "ATL",
+    rankLeague: "nfl", name: "Atlanta Falcons", rankType: null
+  },
+  "baseball/mlb|ATL|MLB": {
+    sport: "baseball", league: "mlb", team: "ATL",
+    rankLeague: "mlb", name: "Atlanta Braves", rankType: null
+  },
+  "tennis/atp|ATP|ATP": {
+    sport: "tennis", league: "atp", team: null,
+    rankLeague: "atp", name: "ATP Tour", rankType: null, isTennis: true
+  },
+  "tennis/wta|WTA|WTA": {
+    sport: "tennis", league: "wta", team: null,
+    rankLeague: "wta", name: "WTA Tour", rankType: null, isTennis: true
+  }
+};
+
+const PGA_SCHEDULE_2026 = [
+  { date: '2026-03-05', name: 'Arnold Palmer Invitational', venue: 'Bay Hill Club, Orlando, FL' },
+  { date: '2026-03-12', name: 'THE PLAYERS Championship', venue: 'TPC Sawgrass, Ponte Vedra Beach, FL' },
+  { date: '2026-03-19', name: 'Valspar Championship', venue: 'Innisbrook Resort, Palm Harbor, FL' },
+  { date: '2026-03-26', name: 'Texas Children\'s Houston Open', venue: 'Memorial Park GC, Houston, TX' },
+  { date: '2026-04-02', name: 'Valero Texas Open', venue: 'TPC San Antonio, San Antonio, TX' },
+  { date: '2026-04-09', name: 'Masters Tournament ⭐', venue: 'Augusta National, Augusta, GA' },
+  { date: '2026-04-16', name: 'RBC Heritage ⭐', venue: 'Harbour Town Golf Links, Hilton Head, SC' },
+  { date: '2026-04-23', name: 'Zurich Classic of New Orleans', venue: 'TPC Louisiana, Avondale, LA' },
+  { date: '2026-04-30', name: 'Cadillac Championship ⭐', venue: 'Trump National Doral, Miami, FL' },
+  { date: '2026-05-07', name: 'Truist Championship ⭐', venue: 'Quail Hollow Club, Charlotte, NC' },
+  { date: '2026-05-14', name: 'PGA Championship ⭐', venue: 'Aronimink GC, Newtown Square, PA' },
+  { date: '2026-05-21', name: 'CJ Cup Byron Nelson', venue: 'TPC Craig Ranch, McKinney, TX' },
+  { date: '2026-05-28', name: 'Charles Schwab Challenge', venue: 'Colonial CC, Fort Worth, TX' },
+  { date: '2026-06-04', name: 'Memorial Tournament ⭐', venue: 'Muirfield Village, Dublin, OH' },
+  { date: '2026-06-11', name: 'RBC Canadian Open', venue: 'TPC Toronto, Caledon, Ontario' },
+  { date: '2026-06-18', name: 'U.S. Open ⭐', venue: 'Oakmont CC, Oakmont, PA' },
+  { date: '2026-06-25', name: 'Travelers Championship', venue: 'TPC River Highlands, Cromwell, CT' },
+  { date: '2026-07-02', name: 'Rocket Mortgage Classic', venue: 'Detroit GC, Detroit, MI' },
+  { date: '2026-07-13', name: 'The Open Championship ⭐', venue: 'Royal Birkdale, Southport, England' },
+  { date: '2026-07-16', name: 'Corales Puntacana Championship', venue: 'Corales GC, Punta Cana, DR' },
+  { date: '2026-07-23', name: '3M Open', venue: 'TPC Twin Cities, Blaine, MN' },
+  { date: '2026-07-30', name: 'Rocket Classic', venue: 'Detroit GC, Detroit, MI' },
+  { date: '2026-08-06', name: 'Wyndham Championship', venue: 'Sedgefield CC, Greensboro, NC' },
+  { date: '2026-08-13', name: 'FedEx St. Jude Championship', venue: 'TPC Southwind, Memphis, TN' },
+  { date: '2026-08-20', name: 'BMW Championship', venue: 'Bellerive CC, St. Louis, MO' },
+  { date: '2026-08-27', name: 'Tour Championship', venue: 'East Lake GC, Atlanta, GA' },
+];
+
+const ATP_SCHEDULE_2026 = [
+  { date: '2026-03-05', name: 'BNP Paribas Open (Indian Wells)', venue: 'Indian Wells, CA · Masters 1000' },
+  { date: '2026-03-19', name: 'Miami Open', venue: 'Miami, FL · Masters 1000' },
+  { date: '2026-04-06', name: 'Monte-Carlo Masters', venue: 'Monte Carlo · Masters 1000' },
+  { date: '2026-04-20', name: 'Barcelona Open', venue: 'Barcelona, Spain · ATP 500' },
+  { date: '2026-04-27', name: 'Madrid Open', venue: 'Madrid, Spain · Masters 1000' },
+  { date: '2026-05-11', name: 'Internazionali BNL d\'Italia', venue: 'Rome, Italy · Masters 1000' },
+  { date: '2026-05-24', name: 'French Open (Roland Garros) ⭐', venue: 'Paris, France · Grand Slam' },
+  { date: '2026-06-08', name: 'Stuttgart Open', venue: 'Stuttgart, Germany · ATP 250' },
+  { date: '2026-06-15', name: 'Queen\'s Club Championships', venue: 'London, UK · ATP 500' },
+  { date: '2026-06-22', name: 'Halle Open', venue: 'Halle, Germany · ATP 500' },
+  { date: '2026-06-29', name: 'Wimbledon ⭐', venue: 'London, UK · Grand Slam' },
+  { date: '2026-07-20', name: 'Hamburg Open', venue: 'Hamburg, Germany · ATP 500' },
+  { date: '2026-07-27', name: 'Swiss Open', venue: 'Gstaad, Switzerland · ATP 250' },
+  { date: '2026-08-10', name: 'Canadian Open', venue: 'Montreal/Toronto · Masters 1000' },
+  { date: '2026-08-17', name: 'Western & Southern Open', venue: 'Cincinnati, OH · Masters 1000' },
+  { date: '2026-08-30', name: 'US Open ⭐', venue: 'New York, NY · Grand Slam' },
+  { date: '2026-10-05', name: 'China Open', venue: 'Beijing, China · ATP 500' },
+  { date: '2026-10-12', name: 'Shanghai Masters', venue: 'Shanghai, China · Masters 1000' },
+  { date: '2026-11-02', name: 'Paris Masters', venue: 'Paris, France · Masters 1000' },
+  { date: '2026-11-09', name: 'Nitto ATP Finals', venue: 'Turin, Italy · ATP Finals' },
+];
+
+const WTA_SCHEDULE_2026 = [
+  { date: '2026-03-05', name: 'BNP Paribas Open (Indian Wells)', venue: 'Indian Wells, CA · WTA 1000' },
+  { date: '2026-03-19', name: 'Miami Open', venue: 'Miami, FL · WTA 1000' },
+  { date: '2026-04-13', name: 'Porsche Tennis Grand Prix', venue: 'Stuttgart, Germany · WTA 500' },
+  { date: '2026-04-20', name: 'Madrid Open', venue: 'Madrid, Spain · WTA 1000' },
+  { date: '2026-05-11', name: 'Internazionali BNL d\'Italia', venue: 'Rome, Italy · WTA 1000' },
+  { date: '2026-05-24', name: 'French Open (Roland Garros) ⭐', venue: 'Paris, France · Grand Slam' },
+  { date: '2026-06-08', name: 'Berlin Open', venue: 'Berlin, Germany · WTA 500' },
+  { date: '2026-06-15', name: 'Rothesay Classic Birmingham', venue: 'Birmingham, UK · WTA 250' },
+  { date: '2026-06-22', name: 'Eastbourne International', venue: 'Eastbourne, UK · WTA 500' },
+  { date: '2026-06-29', name: 'Wimbledon ⭐', venue: 'London, UK · Grand Slam' },
+  { date: '2026-07-20', name: 'Prague Open', venue: 'Prague, Czech Republic · WTA 250' },
+  { date: '2026-08-10', name: 'Canadian Open', venue: 'Montreal/Toronto · WTA 1000' },
+  { date: '2026-08-17', name: 'Western & Southern Open', venue: 'Cincinnati, OH · WTA 1000' },
+  { date: '2026-08-30', name: 'US Open ⭐', venue: 'New York, NY · Grand Slam' },
+  { date: '2026-09-21', name: 'China Open', venue: 'Beijing, China · WTA 1000' },
+  { date: '2026-10-12', name: 'Wuhan Open', venue: 'Wuhan, China · WTA 1000' },
+  { date: '2026-11-02', name: 'Akron WTA Finals Riyadh', venue: 'Riyadh, Saudi Arabia · WTA Finals' },
+];
+
+function getHardcodedSchedule(type) {
+  const now = new Date();
+  let schedule = type === 'pga' ? PGA_SCHEDULE_2026 : type === 'atp' ? ATP_SCHEDULE_2026 : WTA_SCHEDULE_2026;
+  return schedule.filter(ev => new Date(ev.date) >= new Date(now.toDateString()));
+}
+
+function changeSport() {
+  const val = document.getElementById('sportSelect').value;
+  currentConfig = SPORTS[val];
+  loadAll();
+}
+
+async function fetchESPN(url) {
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Network error');
+    return await res.json();
+  } catch(e) {
+    return null;
+  }
+}
+
+function formatDate(dateStr) {
+  const d = new Date(dateStr);
+  const days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+  const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  return `${days[d.getDay()]} ${months[d.getMonth()]} ${d.getDate()}`;
+}
+
+function formatTime(dateStr) {
+  const d = new Date(dateStr);
+  let h = d.getHours(), m = d.getMinutes();
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  return `${h}:${m.toString().padStart(2,'0')} ${ampm}`;
+}
+
+function isToday(dateStr) {
+  const d = new Date(dateStr);
+  const now = new Date();
+  return d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+}
+
+async function loadTeamHero() {
+  const { sport, league, team, name } = currentConfig;
+  if (!team) {
+    document.getElementById('teamHero').innerHTML = `
+      <div class="team-hero">
+        <div class="team-info"><h1>${name}</h1></div>
+      </div>`;
+    return;
+  }
+
+  const data = await fetchESPN(`https://site.api.espn.com/apis/site/v2/sports/${sport}/${league}/teams/${team}`);
+  if (!data || !data.team) {
+    document.getElementById('teamHero').innerHTML = `<div class="team-hero"><div class="team-info"><h1>${name}</h1></div></div>`;
+    return;
+  }
+
+  const t = data.team;
+  const logo = t.logos?.[0]?.href || '';
+  const record = t.record?.items?.[0]?.summary || '';
+  const rankVal = t.rank || '';
+
+  document.getElementById('teamHero').innerHTML = `
+    <div class="team-hero">
+      ${logo ? `<img class="team-logo" src="${logo}" alt="${t.displayName}">` : ''}
+      <div class="team-info">
+        <h1>${t.displayName}</h1>
+        ${record ? `<div class="record">${record} · ${t.location}</div>` : ''}
+      </div>
+      ${rankVal ? `<div class="team-rank">#${rankVal}</div>` : ''}
+    </div>`;
+}
+
+async function loadSchedule() {
+  const { sport, league, team } = currentConfig;
+  const el = document.getElementById('scheduleContent');
+
+  if (!team) { el.innerHTML = '<div class="no-games">Select a team to view schedule</div>'; return; }
+
+  const data = await fetchESPN(`https://site.api.espn.com/apis/site/v2/sports/${sport}/${league}/teams/${team}/schedule`);
+  if (!data || !data.events) { el.innerHTML = '<div class="error">Could not load schedule</div>'; return; }
+
+  const events = data.events.slice(0, 14);
+  if (!events.length) { el.innerHTML = '<div class="no-games">No games scheduled</div>'; return; }
+
+  let html = '';
+  for (const ev of events) {
+    const comp = ev.competitions?.[0];
+    if (!comp) continue;
+
+    const date = formatDate(ev.date);
+    const homeTeam = comp.competitors?.find(c => c.homeAway === 'home');
+    const awayTeam = comp.competitors?.find(c => c.homeAway === 'away');
+    const status = comp.status?.type?.name;
+    const isLive = status === 'STATUS_IN_PROGRESS';
+    const isFinal = status === 'STATUS_FINAL';
+
+    let opponent = comp.competitors?.find(c => c.team?.abbreviation !== team);
+    let opponentName = opponent?.team?.shortDisplayName || opponent?.team?.displayName || 'TBD';
+    let homeaway = comp.competitors?.find(c => c.team?.abbreviation === team)?.homeAway === 'home' ? 'vs' : '@';
+
+    let result = '';
+    let resultClass = 'upcoming';
+    if (isFinal) {
+      const myTeam = comp.competitors?.find(c => c.team?.abbreviation === team);
+      const oppTeam = comp.competitors?.find(c => c.team?.abbreviation !== team);
+      const myScore = parseInt(myTeam?.score || 0);
+      const oppScore = parseInt(oppTeam?.score || 0);
+      const won = myTeam?.winner;
+      result = `${won ? 'W' : 'L'} ${myScore}-${oppScore}`;
+      resultClass = won ? 'win' : 'loss';
+    } else if (isLive) {
+      result = 'LIVE';
+      resultClass = 'win';
+    } else {
+      result = formatTime(ev.date);
+    }
+
+    const network = comp.broadcasts?.[0]?.names?.[0] || '';
+    const venue = comp.venue?.fullName || '';
+
+    html += `
+      <div class="game-item">
+        <div class="game-date">${date}</div>
+        <div class="game-teams">
+          <div class="game-matchup">${homeaway} ${opponentName}</div>
+          ${venue ? `<div class="game-venue">${venue}</div>` : ''}
+        </div>
+        <div>
+          <div class="game-result ${resultClass}">${result}</div>
+          ${network ? `<div class="game-network">${network}</div>` : ''}
+        </div>
+      </div>`;
+  }
+
+  el.innerHTML = html || '<div class="no-games">No games found</div>';
+}
+
+async function loadTodayGames() {
+  const { sport, league, team } = currentConfig;
+  const el = document.getElementById('todayContent');
+  const label = document.getElementById('todayLeagueLabel');
+
+  const today = new Date().toISOString().split('T')[0].replace(/-/g,'');
+  const data = await fetchESPN(`https://site.api.espn.com/apis/site/v2/sports/${sport}/${league}/scoreboard?dates=${today}`);
+
+  if (!data || !data.events) { el.innerHTML = '<div class="no-games">No games today</div>'; return; }
+
+  label.textContent = data.leagues?.[0]?.name || '';
+
+  // Filter to team-only if team sport (Braves, Falcons, etc.)
+  let events = data.events;
+  if (team) {
+    events = events.filter(ev => 
+      ev.competitions?.[0]?.competitors?.some(c => c.team?.abbreviation === team)
+    );
+  }
+
+  let liveGames = [];
+  let html = '';
+
+  for (const ev of events) {
+    const comp = ev.competitions?.[0];
+    if (!comp) continue;
+
+    const status = comp.status?.type?.name;
+    const isLive = status === 'STATUS_IN_PROGRESS';
+    const isFinal = status === 'STATUS_FINAL';
+
+    const home = comp.competitors?.find(c => c.homeAway === 'home');
+    const away = comp.competitors?.find(c => c.homeAway === 'away');
+
+    const homeRank = home?.curatedRank?.current && home.curatedRank.current <= 25 ? `#${home.curatedRank.current} ` : '';
+    const awayRank = away?.curatedRank?.current && away.curatedRank.current <= 25 ? `#${away.curatedRank.current} ` : '';
+
+    const homeName = home?.team?.shortDisplayName || home?.team?.abbreviation || '';
+    const awayName = away?.team?.shortDisplayName || away?.team?.abbreviation || '';
+
+    if (isLive) {
+      liveGames.push({ev, comp, home, away, homeRank, awayRank, homeName, awayName});
+    }
+
+    let timeStr = '';
+    if (isFinal) {
+      timeStr = `FINAL`;
+      const scoreStr = `${away?.score}-${home?.score}`;
+      const network = comp.broadcasts?.[0]?.names?.[0] || '';
+      html += `<div class="today-game">
+        <div class="today-time">${timeStr}</div>
+        <div class="today-matchup">${awayName} @ ${homeName} ${scoreStr}</div>
+        ${network ? `<div class="today-network">${network}</div>` : ''}
+      </div>`;
+      continue;
+    } else if (isLive) {
+      timeStr = `🔴 LIVE`;
+    } else {
+      timeStr = formatTime(ev.date);
+    }
+
+    const network = comp.broadcasts?.[0]?.names?.[0] || '';
+    html += `<div class="today-game">
+      <div class="today-time">${timeStr}</div>
+      <div class="today-matchup">${awayName} @ ${homeName}</div>
+      ${network ? `<div class="today-network">${network}</div>` : ''}
+    </div>`;
+  }
+
+  el.innerHTML = html || '<div class="no-games">No games today</div>';
+
+  // Live card
+  const liveCard = document.getElementById('liveCard');
+  const liveContent = document.getElementById('liveContent');
+  if (liveGames.length > 0) {
+    liveCard.style.display = 'block';
+    let liveHtml = '';
+    for (const { comp, home, away, homeName, awayName } of liveGames) {
+      const homeLogo = home?.team?.logo || '';
+      const awayLogo = away?.team?.logo || '';
+      const period = comp.status?.period || '';
+      const clock = comp.status?.displayClock || '';
+      liveHtml += `
+        <div class="live-game">
+          <div class="live-badge"><div class="live-dot"></div> LIVE</div>
+          <div class="scoreboard">
+            <div class="score-team">
+              ${awayLogo ? `<img src="${awayLogo}" alt="${awayName}">` : ''}
+              <div class="name">${awayName}</div>
+            </div>
+            <div class="score-center">
+              <div class="scores">
+                <div class="score-num">${away?.score || '0'}</div>
+                <div class="score-sep">—</div>
+                <div class="score-num">${home?.score || '0'}</div>
+              </div>
+              <div class="game-status">${period ? `Inn ${period}` : ''} ${clock}</div>
+            </div>
+            <div class="score-team">
+              ${homeLogo ? `<img src="${homeLogo}" alt="${homeName}">` : ''}
+              <div class="name">${homeName}</div>
+            </div>
+          </div>
+        </div>`;
+    }
+    liveContent.innerHTML = liveHtml;
+  } else {
+    liveCard.style.display = 'none';
+  }
+}
+
+async function loadRankings() {
+  const { sport, league, team, rankType } = currentConfig;
+  const el = document.getElementById('rankingsContent');
+
+  // For team sports with rankings
+  if (rankType) {
+    const data = await fetchESPN(`https://site.api.espn.com/apis/site/v2/sports/${sport}/${league}/rankings`);
+    if (!data || !data.rankings) { el.innerHTML = '<div class="error">No rankings available</div>'; return; }
+
+    const ranking = data.rankings[0];
+    if (!ranking) { el.innerHTML = '<div class="no-games">No rankings found</div>'; return; }
+
+    const ranks = ranking.ranks?.slice(0, 25) || [];
+    let html = `<table class="rankings-table">
+      <thead><tr>
+        <th>RK</th><th>TEAM</th><th>RECORD</th><th>PTS</th>
+      </tr></thead><tbody>`;
+
+    for (const r of ranks) {
+      const isMyTeam = r.team?.abbreviation === team;
+      const logo = r.team?.logos?.[0]?.href || '';
+      html += `
+        <tr class="${isMyTeam ? 'highlight-row' : ''}">
+          <td class="rank-num">${r.current}</td>
+          <td><div class="team-cell">
+            ${logo ? `<img src="${logo}" alt="">` : ''}
+            <span>${r.team?.shortDisplayName || r.team?.displayName || ''}</span>
+          </div></td>
+          <td>${r.recordSummary || ''}</td>
+          <td>${r.points || ''}</td>
+        </tr>`;
+    }
+    html += '</tbody></table>';
+    el.innerHTML = html;
+    return;
+  }
+
+  // For leagues without rankings - show standings
+  const data = await fetchESPN(`https://site.api.espn.com/apis/site/v2/sports/${sport}/${league}/standings`);
+  if (!data) { el.innerHTML = '<div class="error">Could not load standings</div>'; return; }
+
+  const groups = data.children || data.standings?.entries ? [data] : (data.groups || []);
+  if (!groups.length) { el.innerHTML = '<div class="no-games">No standings available</div>'; return; }
+
+  const entries = data.standings?.entries || groups[0]?.standings?.entries || [];
+  if (!entries.length) { el.innerHTML = '<div class="no-games">No standings data</div>'; return; }
+
+  let html = `<table class="rankings-table">
+    <thead><tr><th>TEAM</th><th>W</th><th>L</th><th>PCT</th></tr></thead><tbody>`;
+
+  for (const entry of entries.slice(0, 15)) {
+    const t = entry.team;
+    const logo = t?.logos?.[0]?.href || '';
+    const isMyTeam = t?.abbreviation === team;
+    const stats = {};
+    for (const s of (entry.stats || [])) { stats[s.name] = s.displayValue; }
+
+    html += `
+      <tr class="${isMyTeam ? 'highlight-row' : ''}">
+        <td><div class="team-cell">
+          ${logo ? `<img src="${logo}" alt="">` : ''}
+          <span>${t?.shortDisplayName || t?.displayName || ''}</span>
+        </div></td>
+        <td>${stats.wins || stats.OVW || ''}</td>
+        <td>${stats.losses || stats.OVL || ''}</td>
+        <td>${stats.winPercent || stats.PCT || ''}</td>
+      </tr>`;
+  }
+  html += '</tbody></table>';
+  el.innerHTML = html;
+}
+
+async function loadAll() {
+  document.getElementById('teamHero').innerHTML = '';
+  document.getElementById('scheduleContent').innerHTML = '<div class="loading">Loading</div>';
+  document.getElementById('todayContent').innerHTML = '<div class="loading">Loading</div>';
+  document.getElementById('rankingsContent').innerHTML = '<div class="loading">Loading</div>';
+  document.getElementById('liveCard').style.display = 'none';
+
+  if (currentConfig.isGolf) {
+    await loadGolf();
+  } else if (currentConfig.isTennis) {
+    await loadTennis();
+  } else {
+    await Promise.all([loadTeamHero(), loadSchedule(), loadTodayGames(), loadRankings()]);
+  }
+
+  document.getElementById('lastUpdated').textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+}
+
+async function loadGolf() {
+  // Team hero - show tournament name
+  const scoreData = await fetchESPN(`https://site.api.espn.com/apis/site/v2/sports/golf/pga/scoreboard`);
+  const event = scoreData?.events?.[0];
+  const tournName = event?.name || 'PGA Tour';
+  const venue = event?.competitions?.[0]?.venue?.fullName || '';
+  const status = event?.competitions?.[0]?.status?.type?.description || '';
+
+  document.getElementById('teamHero').innerHTML = `
+    <div class="team-hero">
+      <div class="team-info">
+        <h1>${tournName}</h1>
+        ${venue ? `<div class="record">${venue} · ${status}</div>` : ''}
+      </div>
+    </div>`;
+
+  // Leaderboard in rankings panel
+  const comp = event?.competitions?.[0];
+  const competitors = comp?.competitors || [];
+  if (!competitors.length) {
+    document.getElementById('rankingsContent').innerHTML = '<div class="no-games">No tournament in progress</div>';
+  } else {
+    let html = `<table class="rankings-table">
+      <thead><tr><th>POS</th><th>PLAYER</th><th>SCORE</th><th>THRU</th></tr></thead><tbody>`;
+    for (const p of competitors.slice(0, 20)) {
+      const name = p.athlete?.displayName || p.athlete?.shortName || '';
+      const score = p.score?.displayValue || p.statistics?.find(s => s.name === 'scoreToPar')?.displayValue || '';
+      const thru = p.status?.thru || p.statistics?.find(s => s.name === 'holesPlayed')?.displayValue || '';
+      const pos = p.status?.position?.displayName || p.sortOrder || '';
+      html += `<tr>
+        <td class="rank-num">${pos}</td>
+        <td>${name}</td>
+        <td style="color:${score && score.startsWith('-') ? 'var(--green)' : score === 'E' ? 'var(--text)' : 'var(--red)'}">${score}</td>
+        <td style="color:var(--text2)">${thru}</td>
+      </tr>`;
+    }
+    html += '</tbody></table>';
+    document.getElementById('rankingsContent').innerHTML = html;
+  }
+
+  // Schedule - hardcoded 2026 PGA Tour schedule
+  const upcoming = getHardcodedSchedule('pga');
+  if (!upcoming.length) {
+    document.getElementById('scheduleContent').innerHTML = '<div class="no-games">Season complete</div>';
+  } else {
+    let html = '';
+    for (const ev of upcoming.slice(0, 12)) {
+      const d = new Date(ev.date);
+      const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+      const dateStr = `${months[d.getMonth()]} ${d.getDate()}`;
+      const isNext = upcoming[0] === ev;
+      html += `<div class="game-item" style="${isNext ? 'border-left:3px solid var(--accent);' : ''}">
+        <div class="game-date">${dateStr}</div>
+        <div class="game-teams">
+          <div class="game-matchup">${ev.name}</div>
+          <div class="game-venue">${ev.venue}</div>
+        </div>
+      </div>`;
+    }
+    document.getElementById('scheduleContent').innerHTML = html;
+  }
+
+  // Today - current round info
+  if (comp) {
+    const round = comp.status?.period || '';
+    const roundStr = round ? `Round ${round}` : '';
+    document.getElementById('todayContent').innerHTML = `
+      <div class="today-game">
+        <div class="today-time">${roundStr}</div>
+        <div class="today-matchup">${tournName}</div>
+        <div class="today-network">${comp.broadcasts?.[0]?.names?.[0] || ''}</div>
+      </div>`;
+    document.getElementById('todayLeagueLabel').textContent = 'PGA Tour';
+  } else {
+    document.getElementById('todayContent').innerHTML = '<div class="no-games">No tournament today</div>';
+  }
+}
+
+async function loadTennis() {
+  const { league, name } = currentConfig;
+
+  document.getElementById('teamHero').innerHTML = `
+    <div class="team-hero">
+      <div class="team-info"><h1>${name}</h1></div>
+    </div>`;
+
+  // Today's matches
+  const today = new Date().toISOString().split('T')[0].replace(/-/g,'');
+  const scoreData = await fetchESPN(`https://site.api.espn.com/apis/site/v2/sports/tennis/${league}/scoreboard?dates=${today}`);
+  const events = scoreData?.events || [];
+
+  if (!events.length) {
+    document.getElementById('todayContent').innerHTML = '<div class="no-games">No matches today</div>';
+  } else {
+    document.getElementById('todayLeagueLabel').textContent = name;
+    let html = '';
+    let liveHtml = '';
+    let hasLive = false;
+
+    for (const ev of events) {
+      const comp = ev.competitions?.[0];
+      const p1 = comp?.competitors?.[0];
+      const p2 = comp?.competitors?.[1];
+      const p1Name = p1?.athlete?.displayName || p1?.athlete?.shortName || 'Player 1';
+      const p2Name = p2?.athlete?.displayName || p2?.athlete?.shortName || 'Player 2';
+      const status = comp?.status?.type?.name;
+      const isLive = status === 'STATUS_IN_PROGRESS';
+      const isFinal = status === 'STATUS_FINAL';
+
+      let timeStr = '';
+      if (isLive) { timeStr = '🔴 LIVE'; hasLive = true; }
+      else if (isFinal) { timeStr = 'FINAL'; }
+      else { timeStr = formatTime(ev.date); }
+
+      const p1Score = p1?.score || '';
+      const p2Score = p2?.score || '';
+      const scoreStr = (p1Score || p2Score) ? `${p1Score} - ${p2Score}` : '';
+
+      html += `<div class="today-game">
+        <div class="today-time">${timeStr}</div>
+        <div class="today-matchup">${p1Name} vs ${p2Name}</div>
+        <div class="today-network">${scoreStr}</div>
+      </div>`;
+    }
+    document.getElementById('todayContent').innerHTML = html;
+  }
+
+  // Rankings
+  const rankData = await fetchESPN(`https://site.api.espn.com/apis/site/v2/sports/tennis/${league}/rankings`);
+  const ranks = rankData?.rankings?.[0]?.ranks || [];
+  if (!ranks.length) {
+    document.getElementById('rankingsContent').innerHTML = '<div class="no-games">No rankings available</div>';
+  } else {
+    let html = `<table class="rankings-table">
+      <thead><tr><th>RK</th><th>PLAYER</th><th>COUNTRY</th><th>PTS</th></tr></thead><tbody>`;
+    for (const r of ranks.slice(0, 20)) {
+      const logo = r.athlete?.flag?.href || '';
+      html += `<tr>
+        <td class="rank-num">${r.current}</td>
+        <td>${r.athlete?.displayName || ''}</td>
+        <td style="color:var(--text2)">${r.athlete?.flag?.alt || ''}</td>
+        <td>${r.points || ''}</td>
+      </tr>`;
+    }
+    html += '</tbody></table>';
+    document.getElementById('rankingsContent').innerHTML = html;
+  }
+
+  // Schedule - hardcoded 2026 ATP/WTA schedule
+  const type = league === 'atp' ? 'atp' : 'wta';
+  const upcoming = getHardcodedSchedule(type);
+  if (!upcoming.length) {
+    document.getElementById('scheduleContent').innerHTML = '<div class="no-games">Season complete</div>';
+  } else {
+    let html = '';
+    for (const ev of upcoming.slice(0, 12)) {
+      const d = new Date(ev.date);
+      const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+      const dateStr = `${months[d.getMonth()]} ${d.getDate()}`;
+      const isNext = upcoming[0] === ev;
+      html += `<div class="game-item" style="${isNext ? 'border-left:3px solid var(--accent);' : ''}">
+        <div class="game-date">${dateStr}</div>
+        <div class="game-teams">
+          <div class="game-matchup">${ev.name}</div>
+          <div class="game-venue">${ev.venue}</div>
+        </div>
+      </div>`;
+    }
+    document.getElementById('scheduleContent').innerHTML = html;
+  }
+}
+
+// Auto refresh every 60 seconds
+setInterval(loadAll, 60000);
+loadAll();
+</script>
+</body>
+</html>
