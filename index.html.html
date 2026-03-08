@@ -644,7 +644,7 @@ function getHardcodedSchedule(type) {
 
 function changeSport() {
   const val = document.getElementById('sportSelect').value;
-  currentConfig = SPORTS["football/college-football|ALABAMA|NCAAF"];
+  currentConfig = SPORTS[val];
   loadAll();
 }
 
