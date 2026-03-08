@@ -642,6 +642,8 @@ function getHardcodedSchedule(type) {
   return schedule.filter(ev => new Date(ev.date) >= new Date(now.toDateString()));
 }
 
+let currentConfig = SPORTS["football/college-football|ALABAMA|NCAAF"];
+
 function changeSport() {
   const val = document.getElementById('sportSelect').value;
   currentConfig = SPORTS[val];
@@ -650,7 +652,10 @@ function changeSport() {
 
 async function fetchESPN(url) {
   try {
-    const res = await fetch(url);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    const res = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeout);
     if (!res.ok) throw new Error('Network error');
     return await res.json();
   } catch(e) {
